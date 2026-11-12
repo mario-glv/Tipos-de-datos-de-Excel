@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tipos de datos de Excel</title>
+<style>
+/* ==========================================================
+   ACTIVIDAD: Tipos de datos de Excel (reconstruida desde hd2_B4_Act3.swf)
+   Para cambiar la paleta, edita las variables de :root.
+   ========================================================== */
+:root{
+  --primary:#0b5d75;      /* azul petróleo (títulos, etiquetas) */
+  --primary-dark:#083d52;
+  --primary-light:#1389a6;
+  --accent:#d9441f;       /* coral (botón Calificar) */
+  --amber:#ffb454;        /* franja decorativa */
+  --ink:#17303f;
+  --muted:#51677a;
+  --bg:#eef3f8;
+  --card:#ffffff;
+  --line:#cfdbe6;
+  --soft:#e6f2f6;
+  --warn-bg:#fff4e0;
+  --warn-ink:#7a3d00;
+  --err:#b42318;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:1.0625rem;line-height:1.55;
+}
+.print-only{display:none}
+
+/* ---------- Encabezado (sin menú) ---------- */
+.hdr{
+  background:linear-gradient(120deg,var(--primary-dark),var(--primary) 55%,var(--primary-light));
+  color:#fff;border-bottom:5px solid var(--amber);
+}
+.hdr-in{max-width:1100px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.hdr svg{flex:none;width:40px;height:40px}
+.hdr h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;letter-spacing:.2px}
+
+.app{max-width:1100px;margin:0 auto;padding:16px 20px 170px}
+
+/* ---------- Datos del alumno (siempre visibles) ---------- */
+.studentbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:14px;box-shadow:0 4px 14px rgba(11,93,117,.12);
+}
+.field{display:flex;flex-direction:column;gap:3px}
+.field.grow{flex:1 1 280px}
+.field label{font-size:.82rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.5px}
+input[type=text],input[type=date],textarea{
+  font:inherit;color:var(--ink);background:#fff;
+  border:2px solid var(--line);border-radius:12px;padding:9px 12px;width:100%;
+}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--primary-light);outline-offset:2px}
+input[readonly],textarea[readonly]{background:#f3f6f9;color:#34495a}
+[aria-invalid="true"]{border-color:var(--err)!important;background:#fff6f5}
+.err-msg{display:none;color:var(--err);font-weight:600;font-size:.92rem;margin-top:4px}
+.err-msg.on{display:block}
+
+/* ---------- Pestañas (tres hojas) ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{
+  flex:1 1 180px;font:inherit;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--primary);border:2px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;
+}
+.tab small{display:block;font-weight:500;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.tab[aria-selected="true"] small{color:#d6eef5}
+
+/* ---------- Hojas ---------- */
+.page{display:none;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 26px;box-shadow:0 6px 20px rgba(11,93,117,.08)}
+.page.active{display:block}
+.tag{
+  display:flex;align-items:center;gap:10px;margin:22px 0 10px;
+}
+.tag:first-child{margin-top:0}
+.tag span{background:var(--primary);color:#fff;font-weight:700;padding:5px 16px;border-radius:0 999px 999px 0;margin-left:-22px;padding-left:22px}
+.tag::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--line),transparent)}
+.step{margin:12px 0}
+.step .n{color:var(--accent);font-weight:700}
+
+/* Listas con flecha (como el ➲ original) y círculo para sub-pasos */
+ul.arrows,ul.circles{list-style:none;padding:0;margin:10px 0}
+ul.arrows>li,ul.circles>li{position:relative;padding-left:30px;margin:9px 0}
+ul.arrows>li::before{
+  content:"";position:absolute;left:4px;top:.45em;width:16px;height:16px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M2 8h9M8 3.5 12.5 8 8 12.5' fill='none' stroke='%23d9441f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center/contain;
+}
+ul.circles{margin-left:22px}
+ul.circles>li::before{content:"";position:absolute;left:6px;top:.62em;width:10px;height:10px;border-radius:50%;background:var(--primary)}
+b,strong{color:var(--primary-dark)}
+kbd{font:inherit;font-weight:700;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+
+/* ---------- Hoja 1: preguntas abiertas ---------- */
+.q{margin:18px 0}
+.q label{display:block;font-weight:600;margin-bottom:6px;padding-left:30px;position:relative}
+.q label::before{
+  content:"";position:absolute;left:4px;top:.35em;width:16px;height:16px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M2 8h9M8 3.5 12.5 8 8 12.5' fill='none' stroke='%23d9441f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center/contain;
+}
+textarea{min-height:92px;resize:vertical}
+.pend{
+  display:none;margin-top:6px;font-weight:600;font-size:.92rem;color:var(--warn-ink);
+  background:var(--warn-bg);border:1px solid #f1c27d;border-radius:999px;padding:3px 12px;width:fit-content;
+}
+body.graded .pend{display:inline-block}
+
+/* ---------- Resultado ---------- */
+.result{display:none;margin-top:24px;border:2px solid #f1c27d;background:var(--warn-bg);border-radius:var(--radius);padding:16px 18px}
+body.graded .result{display:block}
+.result h2{margin:0 0 6px;font-size:1.25rem;color:var(--warn-ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.stat{background:#fff;border:1px solid #f1c27d;border-radius:12px;padding:8px 12px}
+.stat b{display:block;font-size:1.3rem;color:var(--ink)}
+.stat span{font-size:.88rem;color:var(--muted)}
+.print-warning{display:none}
+
+/* ---------- Tablas (Hoja 2 y 3) ---------- */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:22px;align-items:start}
+.tablewrap{overflow-x:auto;border-radius:10px}
+table.grid{border-collapse:collapse;width:100%;background:#fff;font-size:1rem}
+table.grid th,table.grid td{border:1px solid #b9c8d6;padding:6px 10px;height:34px;text-align:left;white-space:pre}
+table.grid thead th{background:var(--soft);color:var(--primary-dark);font-weight:700}
+table.grid.xl th{background:var(--soft);color:var(--primary-dark);text-align:center;width:1%}
+table.grid.xl td{min-width:54px}
+table.grid.xl td.op{text-align:center}
+.nota{font-size:.9rem;color:var(--muted);margin-top:6px}
+.last{margin-top:26px;padding-top:14px;border-top:2px dashed var(--line)}
+
+/* ---------- Barra inferior ---------- */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:rgba(255,255,255,.97);border-top:3px solid var(--primary);
+  box-shadow:0 -6px 18px rgba(8,61,82,.14);
+}
+.bar-in{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.aviso{
+  display:none;width:100%;margin:0;padding:8px 12px;border-radius:10px;font-weight:600;
+  background:#fff1ef;color:var(--err);border:1px solid #f4b7b0;
+}
+.aviso.on{display:block}
+.aviso.info{background:var(--soft);color:var(--primary-dark);border-color:#a9d3df}
+.grp{display:flex;flex-wrap:wrap;gap:8px}
+.btn{
+  font:inherit;font-weight:700;cursor:pointer;border-radius:12px;padding:10px 18px;border:2px solid transparent;
+}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-nav{background:#fff;color:var(--primary);border-color:var(--primary)}
+.btn-nav:hover:not(:disabled){background:var(--soft)}
+.btn-main{background:var(--accent);color:#fff}
+.btn-main:hover:not(:disabled){background:#b93718}
+.btn-sec{background:var(--primary);color:#fff}
+.btn-sec:hover:not(:disabled){background:var(--primary-dark)}
+.btn-edit{background:#fff;color:var(--warn-ink);border-color:#d49a4a;margin-top:6px}
+
+@media (max-width:860px){
+  .split{grid-template-columns:1fr}
+  .bar-in{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* ==========================================================
+   IMPRESIÓN: solo la Hoja 1 (preguntas), con datos y estado
+   ========================================================== */
+@media print{
+  @page{size:A4;margin:14mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:11.5pt}
+  .hdr{background:none;color:var(--primary);border-bottom:3px solid var(--primary)}
+  .hdr-in{padding:0 0 6px}
+  .hdr svg{display:none}
+  .app{padding:8px 0 0;max-width:none}
+  .studentbar,.tabs,.bar,.btn,.err-msg{display:none!important}
+  .page{display:none!important}
+  #hoja1{display:block!important;border:none;box-shadow:none;padding:0}
+  textarea{display:none!important}
+  .print-only{display:block}
+  .print-meta{display:flex!important;gap:24px;flex-wrap:wrap;border:1px solid #888;border-radius:8px;padding:8px 12px;margin:10px 0}
+  .print-meta div{flex:1 1 auto}
+  .print-meta strong{color:#000}
+  .answer-print{border:1px solid #777;border-radius:8px;min-height:60px;padding:8px 10px;white-space:pre-wrap;word-wrap:break-word}
+  .q,.stat,.result,.step{break-inside:avoid;page-break-inside:avoid}
+  .result{border:2px solid #555;background:#fff}
+  .stat{border:1px solid #888}
+  .pend{border:1px solid #555;background:#fff;color:#000}
+  .print-warning{display:none}
+  body:not(.graded) .print-warning{display:block;border:2px solid #b42318;padding:8px 12px;border-radius:8px;font-weight:700;margin-top:12px}
+  .tag span{border:1px solid var(--primary)}
+}
+</style>
+</head>
+<body>
+
+<!-- ENCABEZADO: solo el título (el menú original fue eliminado) -->
+<header class="hdr">
+  <div class="hdr-in">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="3" width="34" height="34" rx="6" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M3 14h34M3 25h34M14 3v34M26 3v34" stroke="#ffb454" stroke-width="2.5"/></svg>
+    <h1>Tipos de datos de Excel</h1>
+  </div>
+</header>
+
+<main class="app">
+
+  <!-- DATOS DEL ALUMNO (parte superior izquierda, siempre visibles) -->
+  <section class="studentbar" aria-label="Datos del alumno">
+    <div class="field grow">
+      <label for="nombre">Nombre del alumno</label>
+      <input id="nombre" type="text" autocomplete="name" placeholder="Escribe tu nombre completo" aria-describedby="err-nombre">
+      <span class="err-msg" id="err-nombre" role="alert">⚠ Escribe tu nombre antes de calificar.</span>
+    </div>
+    <div class="field">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" type="date">
+    </div>
+  </section>
+
+  <!-- Datos legibles para el documento impreso -->
+  <div class="print-meta print-only" aria-hidden="true">
+    <div><strong>Nombre del alumno:</strong> <span id="p-nombre"></span></div>
+    <div><strong>Fecha:</strong> <span id="p-fecha"></span></div>
+  </div>
+
+  <!-- Navegación entre las tres hojas -->
+  <div class="tabs" role="tablist" aria-label="Hojas de la actividad">
+    <button class="tab" role="tab" id="tab1" aria-controls="hoja1" aria-selected="true">Hoja 1<small>Preguntas</small></button>
+    <button class="tab" role="tab" id="tab2" aria-controls="hoja2" aria-selected="false" tabindex="-1">Hoja 2<small>Instrucciones</small></button>
+    <button class="tab" role="tab" id="tab3" aria-controls="hoja3" aria-selected="false" tabindex="-1">Hoja 3<small>Instrucciones</small></button>
+  </div>
+
+  <!-- ================= HOJA 1: PREGUNTAS ABIERTAS ================= -->
+  <section class="page active" id="hoja1" role="tabpanel" aria-labelledby="tab1">
+    <div class="tag"><span>Propósito de la actividad</span></div>
+    <p>Que conozcas los diferentes tipos de datos que puedes trabajar utilizando una hoja de cálculo como Excel.</p>
+
+    <div class="tag"><span>Paso a paso</span></div>
+    <p class="step"><span class="n">1.</span> Repasa las características de los tipos de datos que reconoce Excel y escribe una breve descripción en los siguientes campos de texto:</p>
+
+    <div class="q">
+      <label for="q1">¿Qué son los datos alfanuméricos?</label>
+      <textarea id="q1" data-num="1" rows="3" aria-describedby="err-q1"></textarea>
+      <div class="print-only answer-print" id="pa1"></div>
+      <span class="err-msg" id="err-q1" role="alert">⚠ Falta contestar esta pregunta.</span>
+      <span class="pend">⏳ Respuesta registrada · Pendiente de revisión</span>
+    </div>
+    <div class="q">
+      <label for="q2">¿Qué son los datos numéricos?</label>
+      <textarea id="q2" data-num="2" rows="3" aria-describedby="err-q2"></textarea>
+      <div class="print-only answer-print" id="pa2"></div>
+      <span class="err-msg" id="err-q2" role="alert">⚠ Falta contestar esta pregunta.</span>
+      <span class="pend">⏳ Respuesta registrada · Pendiente de revisión</span>
+    </div>
+    <div class="q">
+      <label for="q3">¿Qué son las fórmulas de Excel?</label>
+      <textarea id="q3" data-num="3" rows="3" aria-describedby="err-q3"></textarea>
+      <div class="print-only answer-print" id="pa3"></div>
+      <span class="err-msg" id="err-q3" role="alert">⚠ Falta contestar esta pregunta.</span>
+      <span class="pend">⏳ Respuesta registrada · Pendiente de revisión</span>
+    </div>
+    <div class="q">
+      <label for="q4">¿Qué son las funciones de Excel?</label>
+      <textarea id="q4" data-num="4" rows="3" aria-describedby="err-q4"></textarea>
+      <div class="print-only answer-print" id="pa4"></div>
+      <span class="err-msg" id="err-q4" role="alert">⚠ Falta contestar esta pregunta.</span>
+      <span class="pend">⏳ Respuesta registrada · Pendiente de revisión</span>
+    </div>
+
+    <!-- RESULTADO (preguntas abiertas: no se califican automáticamente) -->
+    <div class="result" id="resultado" aria-live="polite">
+      <h2>⏳ Pendiente de revisión</h2>
+      <p style="margin:0">Estas son preguntas abiertas, por lo que no se califican automáticamente. Tu profesor revisará tus respuestas y asignará la calificación.</p>
+      <div class="stats">
+        <div class="stat"><b>4</b><span>Preguntas abiertas</span></div>
+        <div class="stat"><b id="r-contestadas">0</b><span>Contestadas</span></div>
+        <div class="stat"><b>Pendiente</b><span>Calificación (sobre 10)</span></div>
+        <div class="stat"><b>Pendiente</b><span>Aciertos y errores</span></div>
+      </div>
+      <button type="button" class="btn btn-edit" id="btnEditar">Editar respuestas</button>
+    </div>
+    <div class="print-warning">Esta actividad aún no ha sido calificada. Completa tu nombre y las cuatro respuestas, presiona «Calificar» y vuelve a imprimir.</div>
+  </section>
+
+  <!-- ================= HOJA 2: INSTRUCCIONES ================= -->
+  <section class="page" id="hoja2" role="tabpanel" aria-labelledby="tab2">
+    <p class="step"><span class="n">2.</span> Inicia una sesión en Excel y haz lo siguiente:</p>
+    <div class="split">
+      <ul class="arrows">
+        <li>Introduce en la Hoja1 la información de la tabla.</li>
+        <li>Escribe los títulos en las celdas A1 y B1.</li>
+        <li>Escribe los datos en las celdas A2 a A11.</li>
+        <li>No olvides presionar la tecla [ <kbd>Entrar</kbd> ] después de cada dato. Observa cómo se comportan los datos y escribe a la derecha de cada uno, de qué tipo se trata.</li>
+        <li>Observa que al introducir los datos en las celdas A6 y A8; y presionar la tecla [ <kbd>Entrar</kbd> ], aparece el valor cero.</li>
+        <li>Para probar cómo funcionan los cálculos en Excel introduce los valores 12 en C2 y 25 en D2.</li>
+        <li>¿Describe qué sucedió con los valores de A6 y A8?</li>
+      </ul>
+      <div class="tablewrap">
+        <table class="grid">
+          <caption class="print-only">Datos para la hoja de cálculo</caption>
+          <thead><tr><th scope="col" style="text-align:center">Dato</th><th scope="col">Tipo de dato</th></tr></thead>
+          <tbody>
+            <tr><td>Guadalajara 4      - América 3</td><td></td></tr>
+            <tr><td>=RAIZ(81)</td><td></td></tr>
+            <tr><td>12345</td><td></td></tr>
+            <tr><td>267893      ABC</td><td></td></tr>
+            <tr><td>=ABS(D2)</td><td></td></tr>
+            <tr><td>94 cuadernos</td><td></td></tr>
+            <tr><td>=C2+D2</td><td></td></tr>
+            <tr><td>=48*52</td><td></td></tr>
+            <tr><td>84314</td><td></td></tr>
+            <tr><td>Guillermo 234</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <label for="q5" class="visually" style="position:absolute;left:-9999px">Describe qué sucedió con los valores de A6 y A8</label>
+      <textarea id="q5" rows="3" placeholder="Escribe aquí tu respuesta"></textarea>
+    </div>
+    <ul class="arrows">
+      <li>Guarda el libro con el nombre <b>Tipos de datos.xls</b> e imprime la hoja.</li>
+    </ul>
+  </section>
+
+  <!-- ================= HOJA 3: INSTRUCCIONES ================= -->
+  <section class="page" id="hoja3" role="tabpanel" aria-labelledby="tab3">
+    <p class="step"><span class="n">3.</span> Inicia una sesión en Excel y haz lo siguiente:</p>
+    <div class="split">
+      <ul class="arrows">
+        <li>Copia los datos de la tabla partiendo de la celda B2, hacia la derecha y abajo.</li>
+      </ul>
+      <div class="tablewrap">
+        <table class="grid xl">
+          <caption class="print-only">Datos para copiar en Excel</caption>
+          <thead><tr><th scope="col"></th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">E</th><th scope="col">F</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><th scope="row">2</th><td></td><td>128</td><td class="op">+</td><td>812</td><td class="op">=</td><td>=B2+D2</td></tr>
+            <tr><th scope="row">3</th><td></td><td>456</td><td class="op">+</td><td>5721</td><td class="op">=</td><td>=B3+D3</td></tr>
+            <tr><th scope="row">4</th><td></td><td>322</td><td class="op">+</td><td>26930</td><td class="op">=</td><td>=B4+D4</td></tr>
+            <tr><th scope="row">5</th><td></td><td>210</td><td class="op">+</td><td>2028</td><td class="op">=</td><td>=B5+D5</td></tr>
+            <tr><th scope="row">6</th><td></td><td>1468</td><td class="op">+</td><td>112</td><td class="op">=</td><td>=B6+D6</td></tr>
+            <tr><th scope="row">7</th><td></td><td>12873</td><td class="op">+</td><td>41980</td><td class="op">=</td><td>=B7+D7</td></tr>
+            <tr><th scope="row">8</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <ul class="arrows">
+      <li>Observa que al introducir el texto de la última columna; es decir, el signo igual y la suma de los nombres de las celdas que contienen datos, aparece solo el valor de la suma. Para ver la fórmula ubica el cursor sobre una de las celdas de la columna F.</li>
+      <li>Elimina las columnas C y E:
+        <ul class="circles">
+          <li>Ubica el cursor sobre cualquiera de los signos +, ejecuta el comando <b>Eliminar</b> del menú <b>Edición</b> y en el cuadro de diálogo <b>Eliminar celdas</b> selecciona la opción <b>Toda la columna</b> y pulsa sobre el botón <b>Aceptar</b>.</li>
+          <li>Repite la operación poniendo el cursor sobre uno de los signos =.</li>
+          <li>Observa qué sucedió al eliminar las columnas de los símbolos. Ubica el apuntador del ratón en los datos de la columna D.</li>
+          <li>Excel automáticamente renombra las fórmulas como =B2+C2, =B3+C3, =B4+C4, etcétera. También recalcula las operaciones de manera</li>
+          <li>Imprime la hoja y guárdala con el nombre <b>Sumas.xls.</b></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="last">
+      <p class="step" style="margin:0"><span class="n">4.</span> Imprime esta actividad y entrégala a tu profesor.</p>
+      <p class="nota">Para imprimir, usa el botón «Imprimir / Guardar como PDF» (se imprime la Hoja 1, después de presionar «Calificar»).</p>
+    </div>
+  </section>
+</main>
+
+<!-- BARRA INFERIOR: navegación (izquierda) y acciones (derecha) -->
+<footer class="bar">
+  <div class="bar-in">
+    <p class="aviso" id="aviso" role="alert"></p>
+    <div class="grp" role="group" aria-label="Cambiar de hoja">
+      <button type="button" class="btn btn-nav" id="btnPrev">‹ Hoja anterior</button>
+      <button type="button" class="btn btn-nav" id="btnNext">Hoja siguiente ›</button>
+    </div>
+    <div class="grp" role="group" aria-label="Acciones de la actividad">
+      <button type="button" class="btn btn-main" id="btnCalificar">Calificar</button>
+      <button type="button" class="btn btn-sec" id="btnImprimir">Imprimir / Guardar como PDF</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ==========================================================
+   LÓGICA DE LA ACTIVIDAD
+   - Hoja 1: 4 preguntas abiertas (no se califican; quedan «Pendiente de revisión»).
+   - Hojas 2 y 3: solo instrucciones.
+   - Imprimir: solo la Hoja 1 (ver @media print).
+   ========================================================== */
+(function(){
+  const $  = (id) => document.getElementById(id);
+  const PREGUNTAS = ["q1","q2","q3","q4"];      // campos obligatorios de la Hoja 1
+  const TABS = ["tab1","tab2","tab3"];
+  const HOJAS = ["hoja1","hoja2","hoja3"];
+  let hojaActual = 0;
+  let calificada = false;
+
+  /* ---------- Fecha ---------- */
+  function hoyISO(){
+    const d = new Date(), z = (n)=>String(n).padStart(2,"0");
+    return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate());
+  }
+  function fechaLegible(iso){
+    if(!iso) return "";
+    const p = iso.split("-").map(Number);
+    return new Date(p[0],p[1]-1,p[2]).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+  }
+
+  /* ---------- Avisos ---------- */
+  function aviso(texto, tipo){
+    const a = $("aviso");
+    a.textContent = texto || "";
+    a.className = "aviso" + (texto ? " on" : "") + (tipo==="info" ? " info" : "");
+  }
+  function marcar(idCampo, idError, malo){
+    const c = $(idCampo), e = $(idError);
+    if(malo){ c.setAttribute("aria-invalid","true"); e.classList.add("on"); }
+    else    { c.removeAttribute("aria-invalid");     e.classList.remove("on"); }
+  }
+
+  /* ---------- Navegación entre hojas ---------- */
+  function mostrarHoja(n, enfocar){
+    hojaActual = Math.max(0, Math.min(2, n));
+    HOJAS.forEach((id,i)=>{
+      $(id).classList.toggle("active", i===hojaActual);
+      const t = $(TABS[i]);
+      t.setAttribute("aria-selected", i===hojaActual ? "true" : "false");
+      t.tabIndex = i===hojaActual ? 0 : -1;
+    });
+    $("btnPrev").disabled = hojaActual===0;
+    $("btnNext").disabled = hojaActual===2;
+    if(enfocar) $(TABS[hojaActual]).focus();
+    window.scrollTo({top:0});
+  }
+
+  /* ---------- Sincroniza los valores que se verán en el PDF ---------- */
+  function sincronizarImpresion(){
+    $("p-nombre").textContent = $("nombre").value.trim();
+    $("p-fecha").textContent  = fechaLegible($("fecha").value);
+    PREGUNTAS.forEach((id,i)=>{ $("pa"+(i+1)).textContent = $(id).value.trim(); });
+    $("r-contestadas").textContent = PREGUNTAS.filter(id=>$(id).value.trim()!=="").length;
+  }
+
+  /* ---------- Bloqueo / desbloqueo de campos ---------- */
+  function bloquear(si){
+    ["nombre","fecha"].concat(PREGUNTAS).forEach(id=>{
+      const el = $(id);
+      if(el.tagName==="TEXTAREA" || el.type==="text") el.readOnly = si; else el.readOnly = si;
+    });
+    $("fecha").style.pointerEvents = si ? "none" : "";
+    $("btnCalificar").disabled = si;
+  }
+
+  /* ---------- Validación ---------- */
+  function validar(){
+    const faltantes = [];
+    const nombreOk = $("nombre").value.trim() !== "";
+    marcar("nombre","err-nombre",!nombreOk);
+    if(!nombreOk) faltantes.push("tu nombre");
+    const sinResp = [];
+    PREGUNTAS.forEach((id,i)=>{
+      const vacio = $(id).value.trim()==="";
+      marcar(id,"err-"+id,vacio);
+      if(vacio) sinResp.push(i+1);
+    });
+    if(sinResp.length) faltantes.push(sinResp.length===1 ? "la pregunta "+sinResp[0] : "las preguntas "+sinResp.join(", "));
+    return {ok: faltantes.length===0, faltantes, nombreOk, sinResp};
+  }
+
+  /* ---------- Botón «Calificar» ---------- */
+  function calificar(){
+    if(calificada) return;                       // evita clics repetidos
+    const v = validar();
+    if(!v.ok){
+      mostrarHoja(0);                            // lleva al alumno a lo que falta
+      aviso("Antes de calificar completa: "+v.faltantes.join(" y ")+".");
+      const primero = !v.nombreOk ? $("nombre") : $("q"+v.sinResp[0]);
+      primero.focus();
+      return;
+    }
+    sincronizarImpresion();
+    calificada = true;
+    document.body.classList.add("graded");
+    bloquear(true);
+    aviso("Actividad registrada. Las preguntas abiertas quedan pendientes de revisión por tu profesor.","info");
+    mostrarHoja(0);
+    $("resultado").scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  /* ---------- Reintentar (función explícita) ---------- */
+  function editar(){
+    calificada = false;
+    document.body.classList.remove("graded");
+    bloquear(false);
+    aviso("");
+    $("q1").focus();
+  }
+
+  /* ---------- Botón «Imprimir / Guardar como PDF» ---------- */
+  function imprimir(){
+    if(!calificada){
+      mostrarHoja(0);
+      const v = validar();
+      aviso(v.ok ? "Presiona «Calificar» antes de imprimir para que el documento incluya el estado de la actividad."
+                 : "Antes de imprimir completa: "+v.faltantes.join(" y ")+" y presiona «Calificar».");
+      return;
+    }
+    sincronizarImpresion();
+    window.print();                              // el CSS @media print imprime solo la Hoja 1
+  }
+
+  /* ---------- Eventos ---------- */
+  function iniciar(){
+    $("fecha").value = hoyISO();
+    sincronizarImpresion();
+    $("btnCalificar").addEventListener("click", calificar);
+    $("btnImprimir").addEventListener("click", imprimir);
+    $("btnEditar").addEventListener("click", editar);
+    $("btnPrev").addEventListener("click", ()=>mostrarHoja(hojaActual-1));
+    $("btnNext").addEventListener("click", ()=>mostrarHoja(hojaActual+1));
+    TABS.forEach((id,i)=>{
+      $(id).addEventListener("click", ()=>mostrarHoja(i));
+      $(id).addEventListener("keydown", (e)=>{      // flechas del teclado entre pestañas
+        if(e.key==="ArrowRight"){ e.preventDefault(); mostrarHoja((i+1)%3,true); }
+        if(e.key==="ArrowLeft"){  e.preventDefault(); mostrarHoja((i+2)%3,true); }
+      });
+    });
+    ["nombre","fecha"].concat(PREGUNTAS).forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        sincronizarImpresion();
+        if($(id).value.trim()!==""){ marcar(id,"err-"+(id==="nombre"?"nombre":id),false); }
+        if(!calificada) aviso("");
+      });
+    });
+    window.addEventListener("beforeprint", sincronizarImpresion);
+    mostrarHoja(0);
+  }
+  iniciar();
+})();
+</script>
+</body>
+</html>
